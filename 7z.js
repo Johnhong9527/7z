@@ -34,13 +34,6 @@ const file_path = process.argv[2] || 1;
 						$progress: true,
 						method: ['x9'],
 					});
-					const spinner = ora(`${allFiles[i]}.7z: 0%`).start();
-					mySevenStream.on('progress', function(progress) {
-						spinner.text = `${allFiles[i]}.7z: ${progress.percent}%`;
-					});
-					mySevenStream.on('end', function() {
-						spinner.stop();
-					});
 					/*// 目录
 					if (await isDirectory(allFiles[i])) {
 						node_7z.add(`${allFiles[i]}.7z`, `${allFiles[i]}`, {
@@ -90,4 +83,8 @@ function isDirectory(path) {
 			resolve(stats.isDirectory());
 		});
 	});
+}
+
+function allFile(files) {
+	let;
 }
