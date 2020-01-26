@@ -20,35 +20,67 @@ const file_path = process.argv[2] || 1;
 			console.log('压缩当前目录下所有文件');
 			const allFiles = await fs.readdirSync(file_path);
 
-			for (let i = 0; i < allFiles.length; i++) {
+			let i = 0;
+			let len = allFiles.length;
+			x(allFiles[i]);
+			function x(path) {
 				//  忽略部分文件
 				if (
-					allFiles[i].search(/^\./) < 0 &&
-					allFiles[i].search(/\.7z/g) < 0 &&
-					allFiles[i].search(/node_modules/g) < 0 &&
-					allFiles[i].search(/yarn\.lock/g) < 0 &&
-					allFiles[i].search(/package\.json/g) < 0
+					path.search(/^\./) < 0 &&
+					path.search(/\.7z/g) < 0 &&
+					path.search(/node_modules/g) < 0 &&
+					path.search(/yarn\.lock/g) < 0 &&
+					path.search(/package\.json/g) < 0
 				) {
-					// console.log(`正在压缩${allFiles[i]}`);
-					mySevenStream = node_7z.add(`${allFiles[i]}.7z`, `${allFiles[i]}`, {
+					console.log(`正在压缩${path}`);
+					const spinner = ora(`${path}.7z: 0%`).start();
+					mySevenStream = node_7z.add(`${path}.7z`, `${path}`, {
 						$progress: true,
 						method: ['x9'],
 					});
-					/*// 目录
-					if (await isDirectory(allFiles[i])) {
-						node_7z.add(`${allFiles[i]}.7z`, `${allFiles[i]}`, {
-							$progress: true,
-							method: ['x9'],
-						});
-					} else {
-						// 文件
-						node_7z.add(`${allFiles[i]}.7z`, `${allFiles[i]}`, {
-							$progress: true,
-							method: ['x9'],
-						});
-					}*/
+					mySevenStream.on('progress', function(progress) {
+						spinner.text = `${path}.7z: ${progress.percent}%`;
+					});
+					mySevenStream.on('end', function() {
+						spinner.stop();
+						i++;
+						if (i < len) {
+							x(allFiles[i]);
+						} else {
+							console.log('压缩完毕啦');
+						}
+					});
 				}
 			}
+			// for (let i = 0; i < allFiles.length; i++) {
+			// 	//  忽略部分文件
+			// 	if (
+			// 		allFiles[i].search(/^\./) < 0 &&
+			// 		allFiles[i].search(/\.7z/g) < 0 &&
+			// 		allFiles[i].search(/node_modules/g) < 0 &&
+			// 		allFiles[i].search(/yarn\.lock/g) < 0 &&
+			// 		allFiles[i].search(/package\.json/g) < 0
+			// 	) {
+			// 		console.log(`正在压缩${allFiles[i]}`);
+			// 		mySevenStream = node_7z.add(`${allFiles[i]}.7z`, `${allFiles[i]}`, {
+			// 			$progress: true,
+			// 			method: ['x9'],
+			// 		});
+			// 		/*// 目录
+			// 		if (await isDirectory(allFiles[i])) {
+			// 			node_7z.add(`${allFiles[i]}.7z`, `${allFiles[i]}`, {
+			// 				$progress: true,
+			// 				method: ['x9'],
+			// 			});
+			// 		} else {
+			// 			// 文件
+			// 			node_7z.add(`${allFiles[i]}.7z`, `${allFiles[i]}`, {
+			// 				$progress: true,
+			// 				method: ['x9'],
+			// 			});
+			// 		}*/
+			// 	}
+			// }
 		} else {
 			// 压缩输入文件
 			mySevenStream = node_7z.add(`${file_path}.7z`, `${file_path}`, {
