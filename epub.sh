@@ -27,6 +27,7 @@
 #path=$1
 #Folder_A="/home/youname/shell/gotfilename/bin"
 function ergodic(){
+  # mkdir old
   for file in `ls $1`
   do
     if [ -d $1"/"$file ]
@@ -37,10 +38,11 @@ function ergodic(){
      then
       local path=$1"/"$file
       local name=$file
-      local size=`du --max-depth=1 $path|awk '{print $1}'`
+      # local size=`du --max-depth=1 $path|awk '{print $1}'`
 #      echo $name  $size $path
 #      echo ${name##*.}
-      ebook-convert $name $name".epub" --output-profile=tablet
+      /Applications/calibre.app/Contents/MacOS/ebook-convert $name .epub --output-profile=tablet
+      # mv $name 
     fi
   done
 }
